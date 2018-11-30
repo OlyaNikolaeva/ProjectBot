@@ -190,7 +190,6 @@
     <Compile Include="GetImage.cs" />
     <Compile Include="Humen.cs" />
     <Compile Include="IDataService.cs" />
-    <Compile Include="JsonPretty.cs" />
     <Compile Include="MakeAnalyst.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

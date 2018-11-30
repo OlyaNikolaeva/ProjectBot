@@ -7,19 +7,11 @@ using System.Threading.Tasks;
 
 namespace EmotienBot
 {
-    class UserService<T> : IDataService<T> where T : Human
+    class UserServiceUser<T> : IDataService<T> where T : Human
     {
 
         const string connString = "Host=localhost;Port=5432;Username=postgres;Password=2112;Database=postgres";
         private string ConnectionString { get; set; }
-        public UserService(string connStr)
-        {
-            ConnectionString = connStr;
-        }
-
-        public UserService()
-        {
-        }
 
         public void Save(T human)
         {
@@ -31,10 +23,10 @@ namespace EmotienBot
                 using (var cmd = new NpgsqlCommand())
                 {
                     cmd.Connection = conn;
-                    cmd.CommandText = "INSERT INTO userInfoEmotien(name, age, emotien, sender_id) VALUES (@name, @age, @emotien, @senderid)";
+                    cmd.CommandText = "INSERT INTO users(name, lasname, date_current, sender_id) VALUES (@name, @lasname, @date_current, @sender_id)";
                     cmd.Parameters.AddWithValue("@name", human.Name);
-                    cmd.Parameters.AddWithValue("@age", human.Age);
-                    cmd.Parameters.AddWithValue("@group", human.Emotien);
+                    cmd.Parameters.AddWithValue("@lastname", human.LastName);
+                    cmd.Parameters.AddWithValue("@date_current", human.Date);
                     cmd.Parameters.AddWithValue("@sender_id", human.SenderId);
 
                     cmd.ExecuteNonQuery();
@@ -42,7 +34,7 @@ namespace EmotienBot
             }
         }
 
-        public void Update(int id, T entity)
+        public void GiveAway(int id, T entity)
         {
             using (var conn = new NpgsqlConnection(connString))
             {
@@ -50,14 +42,13 @@ namespace EmotienBot
                 using (var cmd = new NpgsqlCommand())
                 {
                     cmd.Connection = conn;
-                    cmd.CommandText = "UPDATE userInfo SET  WHERE id=#id,entity=#entity;";
-                    cmd.Parameters.AddWithValue(entity);
-                    cmd.ExecuteNonQuery();
+                    cmd.CommandText = "SELECT *FROM users";
+                    
+                    string nameUser = cmd.Parameters["@name"].Value.ToString();
+                    string lastName = cmd.Parameters["@lastname"].Value.ToString();
+                    string dateCurrent = cmd.Parameters["@date_current"].Value.ToString();
+                    string senderId = cmd.Parameters["@sender_id"].Value.ToString();
                 }
-                using (var cmd = new NpgsqlCommand("SELECT *FROM userInfo", conn))
-                using (var reader = cmd.ExecuteReader())
-                    while (reader.Read())
-                        Console.WriteLine(reader.GetString(0));
             }
         }
 

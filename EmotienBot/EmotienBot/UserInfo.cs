@@ -10,6 +10,5 @@ namespace EmotienBot
     {
         public Human Human { get; set; }
         public int Step { get; set; }
-        public int Id { get; set; }
     }
 }
