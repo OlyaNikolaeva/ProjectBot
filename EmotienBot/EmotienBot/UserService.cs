@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace EmotienBot
 {
-    class UserServiceUser<T> : IDataService<T> where T : Human
+    class UserService<T> : IDataService<T> where T : Human
     {
 
         const string connString = "Host=localhost;Port=5432;Username=postgres;Password=2112;Database=postgres";
