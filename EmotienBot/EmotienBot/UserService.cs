@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace EmotienBot
 {
-    class UserService<T> : IDataService<T> where T : Human
+    class UserService<T> : IDataService<T> where T : Human, new()
     {
 
         const string connString = "Host=localhost;Port=5432;Username=postgres;Password=2112;Database=postgres";
@@ -34,33 +34,28 @@ namespace EmotienBot
             }
         }
 
-        public void GiveAway(int id, T entity)
+        public IEnumerable<T> GetAll()
         {
+            var result = new List<T>();
             using (var conn = new NpgsqlConnection(connString))
             {
                 conn.Open();
                 using (var cmd = new NpgsqlCommand())
                 {
                     cmd.Connection = conn;
-                    cmd.CommandText = "SELECT *FROM users";
-                    
-                    string nameUser = cmd.Parameters["@name"].Value.ToString();
-                    string lastName = cmd.Parameters["@lastname"].Value.ToString();
-                    string dateCurrent = cmd.Parameters["@date_current"].Value.ToString();
-                    string senderId = cmd.Parameters["@sender_id"].Value.ToString();
+                    cmd.CommandText = "SELECT sender_id, name, id FROM users";
+                    var reader = cmd.ExecuteReader();
+                    while(reader.Read())
+                    {
+                        T entity = new T();
+                        entity.SenderId = int.Parse(reader[0].ToString());
+                        entity.Name = reader[1].ToString();
+                        result.Add(entity);
+                    }
                 }
-            }
-        }
 
-        public IEnumerable<T> GetAll()
-        {
-            var cacheList = new List<T>();
-            foreach (var value in cacheList)
-            {
-                if (value != null)
-                    cacheList.Add(value);
+                return result;
             }
-            return cacheList;
         }
     }
 }

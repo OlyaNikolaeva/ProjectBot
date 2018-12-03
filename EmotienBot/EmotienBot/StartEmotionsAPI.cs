@@ -11,13 +11,13 @@ namespace EmotienBot
 {
     class StartEmotionsAPI
     {
-        public void Start()
+        public void Start(string imageFilePath)
         {
             var makeAnalys = new MakeAnalyst();
             Console.WriteLine("Detect faces:");
             Console.Write(
                 "Enter the path to an image with faces that you wish to analyze: ");
-            string imageFilePath = Console.ReadLine();
+            //string imageFilePath = Console.ReadLine();
             
 
             if (File.Exists(imageFilePath))

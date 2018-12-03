@@ -126,7 +126,7 @@ namespace EmotienBot
             {
                 foreach (var i in userInfo.ToString())
                 {
-                    if ()
+                    if (userInfo.Human.SenderId==i)
                     {
                         userInfo.Step++;
                         await botClient.SendTextMessageAsync(
@@ -147,7 +147,26 @@ namespace EmotienBot
                     }
                 }
             }
-            
+
+            if (userInfo.Step == 5)
+            {
+                userInfo.Step++;
+                await botClient.SendTextMessageAsync(
+                    chatId: e.Message.Chat,
+                    text: "Пришлите мне вашу фотку"
+                );
+                return;
+                
+            }
+
+            if (userInfo.Step == 6)
+            {
+                var fr = new StartEmotionsAPI();
+                fr.Start(e.Message.Text);
+
+                userInfo.Step++;              
+           }
+
         }
     }
 }
