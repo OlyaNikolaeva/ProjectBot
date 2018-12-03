@@ -195,7 +195,7 @@
     <Compile Include="UserService.cs" />
     <Compile Include="FaceComponents.cs" />
     <Compile Include="GetImage.cs" />
-    <Compile Include="Humen.cs" />
+    <Compile Include="Human.cs" />
     <Compile Include="IDataService.cs" />
     <Compile Include="MakeAnalyst.cs" />
     <Compile Include="Program.cs" />

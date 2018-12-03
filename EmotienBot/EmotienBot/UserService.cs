@@ -10,7 +10,7 @@ namespace EmotienBot
     class UserService<T> : IDataService<T> where T : Human, new()
     {
 
-        const string connString = "Host=localhost;Port=5432;Username=postgres;Password=2112;Database=postgres";
+        const string connString = "Host=localhost;Port=5432;Username=postgres;Password=5432;Database=postgres";
         private string ConnectionString { get; set; }
 
         public void Save(T human)
@@ -18,12 +18,11 @@ namespace EmotienBot
             using (var conn = new NpgsqlConnection(connString))
             {
                 conn.Open();
-
-                // Insert some data
+                
                 using (var cmd = new NpgsqlCommand())
                 {
                     cmd.Connection = conn;
-                    cmd.CommandText = "INSERT INTO users(name, lasname, date_current, sender_id) VALUES (@name, @lasname, @date_current, @sender_id)";
+                    cmd.CommandText = "INSERT INTO users(name, lastname, date_current, sender_id) VALUES (@name, @lastname, @date_current, @sender_id)";
                     cmd.Parameters.AddWithValue("@name", human.Name);
                     cmd.Parameters.AddWithValue("@lastname", human.LastName);
                     cmd.Parameters.AddWithValue("@date_current", human.Date);
@@ -43,13 +42,15 @@ namespace EmotienBot
                 using (var cmd = new NpgsqlCommand())
                 {
                     cmd.Connection = conn;
-                    cmd.CommandText = "SELECT sender_id, name, id FROM users";
+                    cmd.CommandText = "SELECT sender_id, name,lastname,date_current FROM users";
                     var reader = cmd.ExecuteReader();
                     while(reader.Read())
                     {
                         T entity = new T();
                         entity.SenderId = int.Parse(reader[0].ToString());
                         entity.Name = reader[1].ToString();
+                        entity.LastName = reader[2].ToString();
+                        entity.Date = Convert.ToDateTime(reader[3].ToString());
                         result.Add(entity);
                     }
                 }

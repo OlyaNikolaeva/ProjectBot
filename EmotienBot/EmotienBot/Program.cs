@@ -7,10 +7,11 @@ using Telegram.Bot.Types.ReplyMarkups;
 
 namespace EmotienBot
 {
-    static class Program
+    class Program
     {
         static ITelegramBotClient botClient;
         public static Dictionary<int, UserInfo> UserInfos;
+        public static UserService<Human> Service;
 
         public static void Main()
         {
@@ -21,6 +22,8 @@ namespace EmotienBot
                 $"Hello, World! I am user {me.Id} and my name is {me.FirstName}."
             );
 
+            Service = new UserService<Human>();
+
             UserInfos = new Dictionary<int, UserInfo>();
 
             botClient.OnMessage += Bot_OnMessage;
@@ -30,7 +33,7 @@ namespace EmotienBot
 
         public static async void Bot_OnMessage(object sender, MessageEventArgs e)
         {
-            var service = new UserService<Human>();
+            var dateCurrent = DateTime.Today;
 
             var senderId = e.Message.From.Id;
             UserInfos.TryGetValue(senderId, out var userInfo);
@@ -43,6 +46,32 @@ namespace EmotienBot
                 };
 
                 UserInfos.Add(senderId, userInfo);
+                userInfo.Human.SenderId = senderId;
+                userInfo.Human.Date = dateCurrent;
+
+                var listPeople = Service.GetAll();
+                foreach(var i in listPeople)
+                {
+                    if (userInfo.Human.SenderId==i.SenderId)
+                    {
+                        userInfo.Step++;
+                        await botClient.SendTextMessageAsync(
+                                chatId: e.Message.Chat,
+                                text: "Такой пользователь уже есть"
+                            );
+                        return;
+                    }
+                    else
+                    {
+                        Service.Save(userInfo.Human);
+                        userInfo.Step++;
+                        await botClient.SendTextMessageAsync(
+                                chatId: e.Message.Chat,
+                                text: "Вы записаны в базу"
+                            );
+                        return;
+                    }
+                }
             }
 
             if (userInfo.Step == 0)
@@ -111,10 +140,9 @@ namespace EmotienBot
             {
                 var lastName = e.Message.Text;
                 userInfo.Human.LastName = lastName;
-                userInfo.Human.SenderId = senderId;
 
                 userInfo.Step++;
-
+                Service.Save(userInfo.Human);
                 await botClient.SendTextMessageAsync(
                     chatId: e.Message.Chat,
                     text: "Отлично, у меня есть необходимые данные, чтобы внести вас в базу"
@@ -124,48 +152,21 @@ namespace EmotienBot
 
             if (userInfo.Step == 4)
             {
-                foreach (var i in userInfo.ToString())
-                {
-                    if (userInfo.Human.SenderId==i)
-                    {
-                        userInfo.Step++;
-                        await botClient.SendTextMessageAsync(
-                            chatId: e.Message.Chat,
-                            text: "Ваше Id уже есть в базе"
-                        );
-                        return;
-                    }
-                    else
-                    {
-                        userInfo.Step++;
-                        service.Save(userInfo.Human);
-                        await botClient.SendTextMessageAsync(
-                            chatId: e.Message.Chat,
-                            text: "Вы добавлены"
-                        );
-                        return;
-                    }
-                }
-            }
-
-            if (userInfo.Step == 5)
-            {
                 userInfo.Step++;
                 await botClient.SendTextMessageAsync(
                     chatId: e.Message.Chat,
                     text: "Пришлите мне вашу фотку"
                 );
                 return;
-                
             }
 
-            if (userInfo.Step == 6)
+            if (userInfo.Step == 5)
             {
                 var fr = new StartEmotionsAPI();
                 fr.Start(e.Message.Text);
 
-                userInfo.Step++;              
-           }
+                userInfo.Step++;
+            }
 
         }
     }
