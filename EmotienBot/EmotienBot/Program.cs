@@ -54,17 +54,17 @@ namespace EmotienBot
                 {
                     if (userInfo.Human.SenderId==i.SenderId)
                     {
-                        userInfo.Step++;
+                        userInfo.Step=4;
                         await botClient.SendTextMessageAsync(
                                 chatId: e.Message.Chat,
-                                text: "Такой пользователь уже есть"
+                                text: "Вы уже записаны в базе) Нажмитте люб.клавишу"
                             );
                         return;
                     }
                     else
                     {
                         Service.Save(userInfo.Human);
-                        userInfo.Step++;
+                        userInfo.Step=0;
                         await botClient.SendTextMessageAsync(
                                 chatId: e.Message.Chat,
                                 text: "Вы записаны в базу"
@@ -148,7 +148,7 @@ namespace EmotienBot
                     text: "Отлично, у меня есть необходимые данные, чтобы внести вас в базу"
                 );
                 return;
-            }
+            }  
 
             if (userInfo.Step == 4)
             {
