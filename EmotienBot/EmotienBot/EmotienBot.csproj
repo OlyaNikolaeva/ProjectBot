@@ -192,6 +192,8 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="FileService.cs" />
+    <Compile Include="Photo.cs" />
     <Compile Include="UserService.cs" />
     <Compile Include="FaceComponents.cs" />
     <Compile Include="GetImage.cs" />
@@ -206,6 +208,12 @@
   <ItemGroup>
     <None Include="App.config" />
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup />
+  <ItemGroup>
+    <Content Include="files\empty.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

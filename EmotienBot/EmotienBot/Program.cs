@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Threading;
 using Telegram.Bot;
 using Telegram.Bot.Args;
@@ -12,6 +13,7 @@ namespace EmotienBot
         static ITelegramBotClient botClient;
         public static Dictionary<int, UserInfo> UserInfos;
         public static UserService<Human> Service;
+        public static FileService<Photo> PhotoService;
 
         public static void Main()
         {
@@ -23,6 +25,7 @@ namespace EmotienBot
             );
 
             Service = new UserService<Human>();
+            PhotoService = new FileService<Photo>();
 
             UserInfos = new Dictionary<int, UserInfo>();
 
@@ -162,12 +165,28 @@ namespace EmotienBot
 
             if (userInfo.Step == 5)
             {
-                var fr = new StartEmotionsAPI();
-                fr.Start(e.Message.Text);
+                if(e.Message.Photo != null)
+                {
+                    var photos = e.Message.Photo;
+                    var photo = photos[photos.Length - 1];
+
+                    var fileId = photo.FileId;
+                    var photoIdentifier = Guid.NewGuid();
+                    using (var fileStream = System.IO.File.OpenWrite($"files\\{photoIdentifier}"))
+                    {
+                        var fileInfo = await botClient.GetInfoAndDownloadFileAsync(
+                          fileId: fileId,
+                          destination: fileStream
+                        );
+                    }
+
+                    // сделать запись в бд, где path - files\\{photoIdentifier}
+
+                    //запрос to FaceAPI
+                }
 
                 userInfo.Step++;
             }
-
         }
     }
 }
