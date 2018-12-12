@@ -13,10 +13,10 @@ namespace EmotienBot
 {
     public class MakeAnalyst
     {
-        const string subscriptionKey = "ec918af9c84f42388334a2bacf1f40cc";
+        const string subscriptionKey = "5d5294e181464e16bfbc46d5fac79873";
 
         const string uriBase =
-            "https://westeurope.api.cognitive.microsoft.com/face/v1.0/detect";
+            "https://westcentralus.api.cognitive.microsoft.com/face/v1.0/detect";
 
         /// <summary>
         /// Gets the analysis of the specified image by using the Face REST API.

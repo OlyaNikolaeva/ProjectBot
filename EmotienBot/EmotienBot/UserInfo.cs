@@ -10,5 +10,6 @@ namespace EmotienBot
     {
         public Human Human { get; set; }
         public int Step { get; set; }
+        public Photo Photo { get; set; }
     }
 }

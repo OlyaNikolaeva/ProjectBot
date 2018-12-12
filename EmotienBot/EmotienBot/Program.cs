@@ -172,7 +172,7 @@ namespace EmotienBot
 
                     var fileId = photo.FileId;
                     var photoIdentifier = Guid.NewGuid();
-                    using (var fileStream = System.IO.File.OpenWrite($"files\\{photoIdentifier}"))
+                    using (var fileStream = System.IO.File.OpenWrite($"files\\{photoIdentifier}.jpg"))
                     {
                         var fileInfo = await botClient.GetInfoAndDownloadFileAsync(
                           fileId: fileId,
@@ -180,9 +180,16 @@ namespace EmotienBot
                         );
                     }
 
+                    //userInfo.Photo.Path = $"files\\{photoIdentifier}.jpg";
+                    //userInfo.Photo.DateCreate = dateCurrent;
+                    //userInfo.Photo.SenderId = senderId;
+                    //PhotoService.Save(userInfo.Photo);
+
                     // сделать запись в бд, где path - files\\{photoIdentifier}
 
                     //запрос to FaceAPI
+                    //var emotionGuy = new StartEmotionsAPI();
+                    //emotionGuy.Start($"files\\{photoIdentifier}.jpg");
                 }
 
                 userInfo.Step++;
