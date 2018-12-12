@@ -165,11 +165,10 @@ namespace EmotienBot
 
             if (userInfo.Step == 5)
             {
-                if(e.Message.Photo != null)
+                if (e.Message.Photo != null)
                 {
                     var photos = e.Message.Photo;
                     var photo = photos[photos.Length - 1];
-
                     var fileId = photo.FileId;
                     var photoIdentifier = Guid.NewGuid();
                     using (var fileStream = System.IO.File.OpenWrite($"files\\{photoIdentifier}.jpg"))
@@ -181,27 +180,35 @@ namespace EmotienBot
                     }
 
                     //userInfo.Photo.Path = $"files\\{photoIdentifier}.jpg";
-                    //userInfo.Photo.DateCreate = dateCurrent;
+                    //userInfo.Photo.DateCreate = DateTime.Today;
                     //userInfo.Photo.SenderId = senderId;
                     //PhotoService.Save(userInfo.Photo);
 
                     // сделать запись в бд, где path - files\\{photoIdentifier}
 
                     //запрос to FaceAPI
-                    //var emotionGuy = new StartEmotionsAPI();
-                    //emotionGuy.Start($"files\\{photoIdentifier}.jpg");
+                    var emotionGuy = new StartEmotionsAPI();
+                    emotionGuy.Start($"files\\{photoIdentifier}.jpg");
                 }
 
                 userInfo.Step++;
+            }
+
+            if (userInfo.Step == 6)
+            {
+                var currentEmotion=
+                userInfo.Step++;
+                await botClient.SendTextMessageAsync(
+                    chatId: e.Message.Chat,
+                    text: "Пришлите мне вашу фотку"
+                );
+                return;
             }
         }
     }
 }
 
-//                    userInfo.Step++;
-//                    await botClient.SendTextMessageAsync(
-//                        chatId: e.Message.Chat,
-//                        text: "В какой ты группе?",
+
 //                        replyMarkup: new ReplyKeyboardMarkup
 //                        {
 //                            Keyboard = new[]
@@ -242,7 +249,6 @@ namespace EmotienBot
 //            }
 //            if (userInfo.Step == 3)
 //            {
-//                // ReplyKeyboardMarkup.OnTimeKeyboard = true;
 //                if (e.Message.Text != "709")
 
 //                {
@@ -252,17 +258,3 @@ namespace EmotienBot
 //                        );
 //                    return;
 //                }
-//            }
-//            var group_number = e.Message.Text;
-//            service.Save(userInfo.Human);
-//            //service.Save(group_number); //--
-//            // dataBase.DataBaseInfo("group_number", e.Message.Text);
-//            await botClient.SendTextMessageAsync(
-//                        chatId: e.Message.Chat,
-//                        text: "Ты красавчик!!!!"
-//                    );
-//            return;
-
-//        }
-//    }
-//}
