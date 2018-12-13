@@ -5,38 +5,33 @@ using System.Linq.Expressions;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace EmotienBot
 {
     class StartEmotionsAPI
     {
-        public void Start(string imageFilePath)
+        public async Task<Emotion> Start(string imageFilePath)
         {
             var makeAnalys = new MakeAnalyst();
-            Console.WriteLine("Detect faces:");
-            Console.Write(
-                "Enter the path to an image with faces that you wish to analyze: ");
-            //string imageFilePath = Console.ReadLine();
-            
 
-            if (File.Exists(imageFilePath))
+            if (!File.Exists(imageFilePath))
             {
-                try
-                {
-                    var g = makeAnalys.MakeAnalysisRequest(imageFilePath).GetAwaiter();
-                    Console.WriteLine("\nWait a moment for the results to appear.\n");
-                }
-                catch (Exception e)
-                {
-                    Console.WriteLine("\n" + e.Message + "\nPress Enter to exit...\n");
-                }
+                throw new Exception();
             }
-            else
+
+            try
             {
-                Console.WriteLine("\nInvalid file path.\nPress Enter to exit...\n");
+                var g = await makeAnalys.MakeAnalysisRequest(imageFilePath);
+                return g;
+
             }
-            Console.ReadLine();
+            catch (Exception e)
+            {
+                return null;
+            }
         }
     }
 }

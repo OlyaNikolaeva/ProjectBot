@@ -98,6 +98,9 @@ namespace EmotienBot
 
         [JsonProperty("surprise")]
         public double Surprise { get; set; }
+
+        public DateTime DateTimeCreate { get; set; }
+        public int PhotoId { get; set; }
     }
 
     public partial class Exposure

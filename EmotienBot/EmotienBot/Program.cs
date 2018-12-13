@@ -179,16 +179,17 @@ namespace EmotienBot
                         );
                     }
 
-                    //userInfo.Photo.Path = $"files\\{photoIdentifier}.jpg";
-                    //userInfo.Photo.DateCreate = DateTime.Today;
-                    //userInfo.Photo.SenderId = senderId;
-                    //PhotoService.Save(userInfo.Photo);
+                    userInfo.Photo.Path = $"files\\{photoIdentifier}.jpg";
+                    userInfo.Photo.DateCreate = DateTime.Today;
+                    userInfo.Photo.SenderId = senderId;
+                    PhotoService.Save(userInfo.Photo);
 
                     // сделать запись в бд, где path - files\\{photoIdentifier}
 
                     //запрос to FaceAPI
                     var emotionGuy = new StartEmotionsAPI();
                     emotionGuy.Start($"files\\{photoIdentifier}.jpg");
+                   
                 }
 
                 userInfo.Step++;
@@ -196,11 +197,11 @@ namespace EmotienBot
 
             if (userInfo.Step == 6)
             {
-                var currentEmotion=
+                var currentEmotion =
                 userInfo.Step++;
                 await botClient.SendTextMessageAsync(
                     chatId: e.Message.Chat,
-                    text: "Пришлите мне вашу фотку"
+                    text: ""
                 );
                 return;
             }
