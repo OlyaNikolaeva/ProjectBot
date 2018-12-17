@@ -24,7 +24,7 @@ namespace EmotienBot
                     cmd.CommandText = "INSERT INTO photo(path,date_create,user_id) VALUES (@path, @date_create, @user_id)";
                     cmd.Parameters.AddWithValue("@path",file.Path );
                     cmd.Parameters.AddWithValue("@date_create",file.DateCreate);
-                    cmd.Parameters.AddWithValue("@user_id",file.SenderId);
+                    cmd.Parameters.AddWithValue("@user_id",file.UserId);
 
                     cmd.ExecuteNonQuery();
                 }
@@ -46,7 +46,7 @@ namespace EmotienBot
                     {
                         T entity = new T
                         {
-                            SenderId = int.Parse(reader[0].ToString()),
+                            UserId = int.Parse(reader[0].ToString()),
                             Path = reader[1].ToString(),
                             DateCreate = Convert.ToDateTime(reader[3].ToString())
                         };

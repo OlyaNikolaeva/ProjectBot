@@ -37,22 +37,24 @@ namespace EmotienBot
         public static async void Bot_OnMessage(object sender, MessageEventArgs e)
         {
             var dateCurrent = DateTime.Today;
-
+            var listPeople = Service.GetAll();
             var senderId = e.Message.From.Id;
             UserInfos.TryGetValue(senderId, out var userInfo);
             if (userInfo == null)
             {
                 userInfo = new UserInfo
                 {
+                    Emotion = new Emotion(),
                     Human = new Human(),
-                    Step = 0
+                    Step = 0,
+                    Photo=new Photo()
                 };
 
                 UserInfos.Add(senderId, userInfo);
                 userInfo.Human.SenderId = senderId;
                 userInfo.Human.Date = dateCurrent;
 
-                var listPeople = Service.GetAll();
+                //var listPeople = Service.GetAll();
                 foreach(var i in listPeople)
                 {
                     if (userInfo.Human.SenderId==i.SenderId)
@@ -181,27 +183,24 @@ namespace EmotienBot
 
                     userInfo.Photo.Path = $"files\\{photoIdentifier}.jpg";
                     userInfo.Photo.DateCreate = DateTime.Today;
-                    userInfo.Photo.SenderId = senderId;
+                    
+                    userInfo.Photo.UserId = 1;
                     PhotoService.Save(userInfo.Photo);
 
-                    // сделать запись в бд, где path - files\\{photoIdentifier}
-
-                    //запрос to FaceAPI
-                    var emotionGuy = new StartEmotionsAPI();
-                    emotionGuy.Start($"files\\{photoIdentifier}.jpg");
-                   
                 }
-
                 userInfo.Step++;
             }
 
             if (userInfo.Step == 6)
             {
-                var currentEmotion =
+                var emotionGuy = new StartEmotionsAPI();
+
+                var currentEmotion = await emotionGuy.Start(userInfo.Photo.Path);
+
                 userInfo.Step++;
                 await botClient.SendTextMessageAsync(
                     chatId: e.Message.Chat,
-                    text: ""
+                    text: $"Ваше настроение сейчас {currentEmotion}"
                 );
                 return;
             }

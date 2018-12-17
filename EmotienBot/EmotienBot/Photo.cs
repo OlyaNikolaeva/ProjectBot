@@ -10,6 +10,6 @@ namespace EmotienBot
     {
         public string Path { get; set; }
         public DateTime DateCreate { get; set; }
-        public int SenderId { get; set; }
+        public int UserId { get; set; }
     }
 }

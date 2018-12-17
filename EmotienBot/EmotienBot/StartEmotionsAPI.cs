@@ -26,7 +26,6 @@ namespace EmotienBot
             {
                 var g = await makeAnalys.MakeAnalysisRequest(imageFilePath);
                 return g;
-
             }
             catch (Exception e)
             {
