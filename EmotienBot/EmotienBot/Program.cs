@@ -39,9 +39,15 @@ namespace EmotienBot
             var dateCurrent = DateTime.Today;
             var listPeople = Service.GetAll();
             var senderId = e.Message.From.Id;
-            UserInfos.TryGetValue(senderId, out var userInfo);
+            UserInfos.TryGetValue(senderId, out var userInfo);       
+
             if (userInfo == null)
             {
+                await botClient.SendTextMessageAsync(
+                chatId: e.Message.Chat,
+                text: "Привет, меня зовут Гриша-Голубь и я являюсь ботом, который распознает твои эмоции по фотографии, которую ты мне отправищь)"
+                );
+
                 userInfo = new UserInfo
                 {
                     Emotion = new Emotion(),
@@ -62,7 +68,8 @@ namespace EmotienBot
                         userInfo.Step=4;
                         await botClient.SendTextMessageAsync(
                                 chatId: e.Message.Chat,
-                                text: "Вы уже записаны в базе) Нажмитте люб.клавишу"
+                                text: "Вы уже записаны в базе.Рады вас снова видеть) "
+                                 
                             );
                         return;
                     }
@@ -72,7 +79,7 @@ namespace EmotienBot
                         userInfo.Step=0;
                         await botClient.SendTextMessageAsync(
                                 chatId: e.Message.Chat,
-                                text: "Вы записаны в базу"
+                                text: "Рады с вами познакомится) Позвольте записать вас в базу"
                             );
                         return;
                     }
@@ -81,13 +88,12 @@ namespace EmotienBot
 
             if (userInfo.Step == 0)
             {
-                userInfo.Step++;
-                await botClient.SendTextMessageAsync(
-                    chatId: e.Message.Chat,
-                    text: "Привет, меня зовут Гриша-Голубь и я являюсь ботом, который распознает твои эмоции по фотографии, которую ты мне отправищь) Ну что, начнем?"
-                );
-
-                return;
+                    userInfo.Step++;
+                    await botClient.SendTextMessageAsync(
+                            chatId: e.Message.Chat,
+                            text: "Начнем?"
+                        );
+                    return;  
             }
 
             if (userInfo.Step == 1)
@@ -196,14 +202,23 @@ namespace EmotienBot
                 var emotionGuy = new StartEmotionsAPI();
 
                 var currentEmotion = await emotionGuy.Start(userInfo.Photo.Path);
+                var emotion = currentEmotion.ToString();
+                var em=emotion.MaxEmotion();
 
+                var ty = new EmotionToString();
+                var type = ty.ToStringEm(em);
                 userInfo.Step++;
                 await botClient.SendTextMessageAsync(
                     chatId: e.Message.Chat,
-                    text: $"Ваше настроение сейчас {currentEmotion}"
+                    text: $"Ваше настроение сейчас {type}"
                 );
                 return;
             }
+        }
+
+        public string MaxEmotion()
+        {
+            //Выведет наибольшую по значениям эмоцию
         }
     }
 }
@@ -230,31 +245,4 @@ namespace EmotienBot
 //                                    new KeyboardButton("705"),
 //                                    new KeyboardButton("я школьник")
 //                                },
-//                            }
 
-//                        }
-//                    );
-
-//                    return;
-//                }
-//                else
-//                {
-//                    await botClient.SendTextMessageAsync(
-//                        chatId: e.Message.Chat,
-//                        text: "Введи возраст"
-//                    );
-
-//                    return;
-//                }
-//            }
-//            if (userInfo.Step == 3)
-//            {
-//                if (e.Message.Text != "709")
-
-//                {
-//                    await botClient.SendTextMessageAsync(
-//                            chatId: e.Message.Chat,
-//                            text: "Ну, хорошая попытка"
-//                        );
-//                    return;
-//                }

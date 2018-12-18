@@ -193,6 +193,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="EmotionService.cs" />
+    <Compile Include="EmotionToString.cs" />
     <Compile Include="FileService.cs" />
     <Compile Include="Photo.cs" />
     <Compile Include="UserService.cs" />
