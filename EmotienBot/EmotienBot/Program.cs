@@ -77,7 +77,7 @@ namespace EmotienBot
                     }
                     else
                     {
-                        
+
                         userInfo.Step = 0;
                         await botClient.SendTextMessageAsync(
                                 chatId: e.Message.Chat,
@@ -201,12 +201,12 @@ namespace EmotienBot
 
             if (userInfo.Step == 6)
             {
-     
+
                 var emotionGuy = new StartEmotionsAPI();
 
                 var currentEmotion = await emotionGuy.Start(userInfo.Photo.Path);
                 var g = Max(currentEmotion);
-               // userInfo.Emotion = currentEmotion;
+                // userInfo.Emotion = currentEmotion;
                 //EmotionService.Save(userInfo.Emotion);
 
                 var emotion = currentEmotion.ToString();
@@ -214,18 +214,18 @@ namespace EmotienBot
                 var ty = new EmotionToString();
                 var type = ty.ToStringEm(emotion);
 
-                
+
                 await botClient.SendTextMessageAsync(
                     chatId: e.Message.Chat,
                     text: type
                 );
 
-                userInfo.Step ++;
+                userInfo.Step++;
             }
 
             if (userInfo.Step == 7)
             {
-                
+
                 await botClient.SendTextMessageAsync(
                     chatId: e.Message.Chat,
                     text: "Что ты хочешь сделать дальше?",
@@ -265,7 +265,7 @@ namespace EmotienBot
                         chatId: e.Message.Chat,
                         text: "Иди поспи"
                     );
-                   
+
                 }
 
                 if (e.Message.Text == "Что то другое")
@@ -274,7 +274,7 @@ namespace EmotienBot
                         chatId: e.Message.Chat,
                         text: "ЭЭЭ..........Нет"
                     );
-                   
+
                 }
 
                 if (e.Message.Text == "Хочу кофе")
@@ -284,14 +284,14 @@ namespace EmotienBot
                         chatId: e.Message.Chat,
                         text: "Советую сходить в Coffe Bean,говорят там скидки)"
                     );
-                  
+
                 }
                 userInfo.Step++;
             }
 
             if (userInfo.Step == 9)
             {
-               
+
                 await botClient.SendTextMessageAsync(
                     chatId: e.Message.Chat,
                     text: $"Теперь я устал, если хочешь еще поболтать, напиши мне попозже"
@@ -310,62 +310,65 @@ namespace EmotienBot
             var neutral = emotion.Neutral;
             var sadness = emotion.Sadness;
             var surprise = emotion.Surprise;
-            var str = "";
-            var res=anger;
+            var res = anger;
             long max = anger;
-            var array = new[] {contempt,disgust,fear,happyness,neutral,sadness,surprise};
-            foreach(var i in array)
+            var array = new[] { anger, contempt, disgust, fear, happyness, neutral, sadness, surprise };
+            for (var i = 0; i < array.Length; i++)
             {
-                if (i > max)
+                if (array[i] > max)
                 {
-                    max = i;
-                    res =res++;
-                }
-                
-            }
-            foreach (var ih in array)
-            {
-                if (res == 0)
-                {
-                    str= "Anger"; 
+                    res = i;
                 }
 
-                if (res == 1)
-                {
-                    str= "Contempt";
-                }
-                if (res == 2)
-                {
-                    str= "Disgust";
-                }
-                if (res == 3)
-                {
-                    str= "Fear";
-                }
-                if (res == 4)
-                {
-                    str= "Happyness";
-                }
-                if (res == 5)
-                {
-                  str= "Neutral";
-                }
-                if (res == 6)
-                {
-                    str= "Sadness";
-                }
-                if (res == 7)
-                {
-                    str= "Surprise";
-                }
-                else
-                {
-                    str= "";
-                }
             }
-
-            return str;
+            var t = Result(res);
+            return t;
         }
 
+        public static string Result(long res)
+        {
+            var str = "";
+            if (res == 0)
+            {
+                str = "Anger";
+            }
+
+            if (res == 1)
+            {
+                str = "Contempt";
+            }
+            if (res == 2)
+            {
+                str = "Disgust";
+            }
+            if (res == 3)
+            {
+                str = "Fear";
+            }
+            if (res == 4)
+            {
+                str = "Happyness";
+            }
+            if (res == 5)
+            {
+                str = "Neutral";
+            }
+            if (res == 6)
+            {
+                str = "Sadness";
+            }
+            if (res == 7)
+            {
+                str = "Surprise";
+            }
+            else
+            {
+                str = "";
+            }
+            return str;
+        }
     }
+        
+
+    
 }
