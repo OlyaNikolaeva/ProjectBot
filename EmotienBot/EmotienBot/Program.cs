@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Threading;
 using Telegram.Bot;
 using Telegram.Bot.Args;
@@ -39,7 +40,7 @@ namespace EmotienBot
             var dateCurrent = DateTime.Today;
             var listPeople = Service.GetAll();
             var senderId = e.Message.From.Id;
-            UserInfos.TryGetValue(senderId, out var userInfo);       
+            UserInfos.TryGetValue(senderId, out var userInfo);
 
             if (userInfo == null)
             {
@@ -53,7 +54,7 @@ namespace EmotienBot
                     Emotion = new Emotion(),
                     Human = new Human(),
                     Step = 0,
-                    Photo=new Photo()
+                    Photo = new Photo()
                 };
 
                 UserInfos.Add(senderId, userInfo);
@@ -61,22 +62,22 @@ namespace EmotienBot
                 userInfo.Human.Date = dateCurrent;
 
                 //var listPeople = Service.GetAll();
-                foreach(var i in listPeople)
+                foreach (var i in listPeople)
                 {
-                    if (userInfo.Human.SenderId==i.SenderId)
+                    if (userInfo.Human.SenderId == i.SenderId)
                     {
-                        userInfo.Step=4;
+                        userInfo.Step = 4;
                         await botClient.SendTextMessageAsync(
                                 chatId: e.Message.Chat,
                                 text: "Вы уже записаны в базе.Рады вас снова видеть) "
-                                 
+
                             );
                         return;
                     }
                     else
                     {
                         Service.Save(userInfo.Human);
-                        userInfo.Step=0;
+                        userInfo.Step = 0;
                         await botClient.SendTextMessageAsync(
                                 chatId: e.Message.Chat,
                                 text: "Рады с вами познакомится) Позвольте записать вас в базу"
@@ -88,12 +89,12 @@ namespace EmotienBot
 
             if (userInfo.Step == 0)
             {
-                    userInfo.Step++;
-                    await botClient.SendTextMessageAsync(
-                            chatId: e.Message.Chat,
-                            text: "Начнем?"
-                        );
-                    return;  
+                userInfo.Step++;
+                await botClient.SendTextMessageAsync(
+                        chatId: e.Message.Chat,
+                        text: "Начнем?"
+                    );
+                return;
             }
 
             if (userInfo.Step == 1)
@@ -159,7 +160,7 @@ namespace EmotienBot
                     text: "Отлично, у меня есть необходимые данные, чтобы внести вас в базу"
                 );
                 return;
-            }  
+            }
 
             if (userInfo.Step == 4)
             {
@@ -189,7 +190,7 @@ namespace EmotienBot
 
                     userInfo.Photo.Path = $"files\\{photoIdentifier}.jpg";
                     userInfo.Photo.DateCreate = DateTime.Today;
-                    
+
                     userInfo.Photo.UserId = 1;
                     PhotoService.Save(userInfo.Photo);
 
@@ -202,47 +203,105 @@ namespace EmotienBot
                 var emotionGuy = new StartEmotionsAPI();
 
                 var currentEmotion = await emotionGuy.Start(userInfo.Photo.Path);
-                var emotion = currentEmotion.ToString();
-                var em=emotion.MaxEmotion();
-
+                var emotion =Max(currentEmotion).ToString();
+                
                 var ty = new EmotionToString();
-                var type = ty.ToStringEm(em);
+                var type = ty.ToStringEm(emotion);
                 userInfo.Step++;
                 await botClient.SendTextMessageAsync(
                     chatId: e.Message.Chat,
-                    text: $"Ваше настроение сейчас {type}"
+                    text: $"Ваше настроение сейчас "
+                );
+                return;
+            }
+
+            if (userInfo.Step == 7)
+            {
+                userInfo.Step++;
+                await botClient.SendTextMessageAsync(
+                    chatId: e.Message.Chat,
+                    text: "Что ты хочешь сделать дальше?",
+                    replyMarkup: new ReplyKeyboardMarkup
+                    {
+                        Keyboard = new[]
+                        {
+                                                new []
+                                                {
+                                                    new KeyboardButton("Хочу еще раз отправить фото"),
+                                                    new KeyboardButton("Устал"),
+                     
+                                                },
+                                                new []
+                                                {
+                                                    new KeyboardButton("Что то другое"),
+                                                    new KeyboardButton("Хочу кофе")
+
+                                                },
+
+                        }
+
+                    }
+                );
+
+                return;
+            }
+
+            if(userInfo.Step==7)
+            {
+                //if (e.Message.Text== "Хочу получить фото обратно")
+                //{
+                //    await botClient.SendPhotoAsync(
+                //    chatId: e.Message.Chat,
+                //    System.IO.File.OpenRead($"files\\{e.Message.Chat.Id}.jpg")
+                //     );
+                //}
+
+                if (e.Message.Text == "Устал")
+                {
+
+                }
+
+                if (e.Message.Text == "Что то другое")
+                {
+
+                }
+
+                if (e.Message.Text == "Хочу кофе")
+                {
+                    userInfo.Step++;
+                    await botClient.SendTextMessageAsync(
+                        chatId: e.Message.Chat,
+                        text: "Советую сходить в Coffe Bean,говорят там скидки)"
+                    );
+                    return;
+                }
+            }
+
+            if (userInfo.Step == 8)
+            {
+                userInfo.Step=0;
+                await botClient.SendTextMessageAsync(
+                    chatId: e.Message.Chat,
+                    text: $"Теперь я устал, если хочешь еще поболтать, напиши мне попозже"
                 );
                 return;
             }
         }
 
-        public string MaxEmotion()
+        public static Emotion Max(Emotion emotion)
         {
-            //Выведет наибольшую по значениям эмоцию
+            long max = 0;
+            Emotion b = null;
+            foreach (long i in emotion)
+            {
+                if (i > max)
+                {
+                    max = i;
+                  
+                }
+            }
+            return b ;
         }
+
     }
 }
-
-
-//                        replyMarkup: new ReplyKeyboardMarkup
-//                        {
-//                            Keyboard = new[]
-//                            {
-//                                new []
-//                                {
-//                                    new KeyboardButton("709"),
-//                                    new KeyboardButton("701"),
-//                                    new KeyboardButton("704")
-//                                },
-//                                new []
-//                                {
-//                                    new KeyboardButton("704"),
-//                                    new KeyboardButton("702"),
-//                                },
-//                                new []
-//                                {
-//                                    new KeyboardButton("703"),
-//                                    new KeyboardButton("705"),
-//                                    new KeyboardButton("я школьник")
-//                                },
-

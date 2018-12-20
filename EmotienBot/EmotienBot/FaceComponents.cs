@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 
 using System.Globalization;
@@ -73,7 +74,7 @@ namespace EmotienBot
         public double Value { get; set; }
     }
 
-    public partial class Emotion
+    public partial class Emotion: IEnumerable
     {
         [JsonProperty("anger")]
         public long Anger { get; set; }
@@ -98,9 +99,13 @@ namespace EmotienBot
 
         [JsonProperty("surprise")]
         public double Surprise { get; set; }
-
         public DateTime DateTimeCreate { get; set; }
         public int PhotoId { get; set; }
+
+        public IEnumerator GetEnumerator()
+        {
+            return GetEnumerator();
+        }
     }
 
     public partial class Exposure
