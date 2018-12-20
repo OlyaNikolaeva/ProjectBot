@@ -13,7 +13,7 @@ namespace EmotienBot
 {
     public class MakeAnalyst
     {
-        const string subscriptionKey = "c8dae343d8ee4cd98aca4072393009ac";
+        const string subscriptionKey = "839486c6f59644fe8d9c812cf26c3d0f";
 
         const string uriBase =
             "https://westcentralus.api.cognitive.microsoft.com/face/v1.0/detect";

@@ -74,7 +74,7 @@ namespace EmotienBot
         public double Value { get; set; }
     }
 
-    public partial class Emotion: IEnumerable
+    public partial class Emotion
     {
         [JsonProperty("anger")]
         public long Anger { get; set; }
@@ -92,20 +92,17 @@ namespace EmotienBot
         public long Happiness { get; set; }
 
         [JsonProperty("neutral")]
-        public double Neutral { get; set; }
+        public long Neutral { get; set; }
 
         [JsonProperty("sadness")]
-        public double Sadness { get; set; }
+        public long Sadness { get; set; }
 
         [JsonProperty("surprise")]
-        public double Surprise { get; set; }
+        public long Surprise { get; set; }
+
         public DateTime DateTimeCreate { get; set; }
         public int PhotoId { get; set; }
 
-        public IEnumerator GetEnumerator()
-        {
-            return GetEnumerator();
-        }
     }
 
     public partial class Exposure

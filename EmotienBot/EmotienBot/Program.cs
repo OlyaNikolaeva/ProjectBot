@@ -15,6 +15,7 @@ namespace EmotienBot
         public static Dictionary<int, UserInfo> UserInfos;
         public static UserService<Human> Service;
         public static FileService<Photo> PhotoService;
+        public static EmotionService<Emotion> EmotionService;
 
         public static void Main()
         {
@@ -44,10 +45,10 @@ namespace EmotienBot
 
             if (userInfo == null)
             {
-                await botClient.SendTextMessageAsync(
-                chatId: e.Message.Chat,
-                text: "Привет, меня зовут Гриша-Голубь и я являюсь ботом, который распознает твои эмоции по фотографии, которую ты мне отправищь)"
-                );
+                //await botClient.SendTextMessageAsync(
+                //chatId: e.Message.Chat,
+                //text: "Привет, меня зовут Гриша-Голубь и я являюсь ботом, который распознает твои эмоции по фотографии, которую ты мне отправищь)"
+                //);
 
                 userInfo = new UserInfo
                 {
@@ -76,7 +77,7 @@ namespace EmotienBot
                     }
                     else
                     {
-                        Service.Save(userInfo.Human);
+                        
                         userInfo.Step = 0;
                         await botClient.SendTextMessageAsync(
                                 chatId: e.Message.Chat,
@@ -189,7 +190,7 @@ namespace EmotienBot
                     }
 
                     userInfo.Photo.Path = $"files\\{photoIdentifier}.jpg";
-                    userInfo.Photo.DateCreate = DateTime.Today;
+                    userInfo.Photo.DateCreate = dateCurrent;
 
                     userInfo.Photo.UserId = 1;
                     PhotoService.Save(userInfo.Photo);
@@ -200,24 +201,31 @@ namespace EmotienBot
 
             if (userInfo.Step == 6)
             {
+     
                 var emotionGuy = new StartEmotionsAPI();
 
                 var currentEmotion = await emotionGuy.Start(userInfo.Photo.Path);
-                var emotion =Max(currentEmotion).ToString();
-                
+                var g = Max(currentEmotion);
+               // userInfo.Emotion = currentEmotion;
+                //EmotionService.Save(userInfo.Emotion);
+
+                var emotion = currentEmotion.ToString();
+
                 var ty = new EmotionToString();
                 var type = ty.ToStringEm(emotion);
-                userInfo.Step++;
+
+                
                 await botClient.SendTextMessageAsync(
                     chatId: e.Message.Chat,
-                    text: $"Ваше настроение сейчас "
+                    text: type
                 );
-                return;
+
+                userInfo.Step ++;
             }
 
             if (userInfo.Step == 7)
             {
-                userInfo.Step++;
+                
                 await botClient.SendTextMessageAsync(
                     chatId: e.Message.Chat,
                     text: "Что ты хочешь сделать дальше?",
@@ -225,61 +233,65 @@ namespace EmotienBot
                     {
                         Keyboard = new[]
                         {
-                                                new []
-                                                {
-                                                    new KeyboardButton("Хочу еще раз отправить фото"),
-                                                    new KeyboardButton("Устал"),
-                     
-                                                },
-                                                new []
-                                                {
-                                                    new KeyboardButton("Что то другое"),
-                                                    new KeyboardButton("Хочу кофе")
-
-                                                },
-
+                          new []
+                          {
+                           new KeyboardButton("Хочу еще раз отправить фото"),
+                           new KeyboardButton("Устал"),
+                           },
+                          new []
+                           {
+                           new KeyboardButton("Что то другое"),
+                           new KeyboardButton("Хочу кофе")
+                           },
                         }
-
                     }
                 );
-
-                return;
-            }
-
-            if(userInfo.Step==7)
-            {
-                //if (e.Message.Text== "Хочу получить фото обратно")
-                //{
-                //    await botClient.SendPhotoAsync(
-                //    chatId: e.Message.Chat,
-                //    System.IO.File.OpenRead($"files\\{e.Message.Chat.Id}.jpg")
-                //     );
-                //}
-
-                if (e.Message.Text == "Устал")
-                {
-
-                }
-
-                if (e.Message.Text == "Что то другое")
-                {
-
-                }
-
-                if (e.Message.Text == "Хочу кофе")
-                {
-                    userInfo.Step++;
-                    await botClient.SendTextMessageAsync(
-                        chatId: e.Message.Chat,
-                        text: "Советую сходить в Coffe Bean,говорят там скидки)"
-                    );
-                    return;
-                }
+                userInfo.Step++;
             }
 
             if (userInfo.Step == 8)
             {
-                userInfo.Step=0;
+                if (e.Message.Text == "Хочу получить фото обратно")
+                {
+                    await botClient.SendPhotoAsync(
+                    chatId: e.Message.Chat,
+                    File.OpenRead($"files\\{userInfo.Photo.Path}")
+                     );
+                }
+
+                if (e.Message.Text == "Устал")
+                {
+                    await botClient.SendTextMessageAsync(
+                        chatId: e.Message.Chat,
+                        text: "Иди поспи"
+                    );
+                   
+                }
+
+                if (e.Message.Text == "Что то другое")
+                {
+                    await botClient.SendTextMessageAsync(
+                        chatId: e.Message.Chat,
+                        text: "ЭЭЭ..........Нет"
+                    );
+                   
+                }
+
+                if (e.Message.Text == "Хочу кофе")
+                {
+
+                    await botClient.SendTextMessageAsync(
+                        chatId: e.Message.Chat,
+                        text: "Советую сходить в Coffe Bean,говорят там скидки)"
+                    );
+                  
+                }
+                userInfo.Step++;
+            }
+
+            if (userInfo.Step == 9)
+            {
+               
                 await botClient.SendTextMessageAsync(
                     chatId: e.Message.Chat,
                     text: $"Теперь я устал, если хочешь еще поболтать, напиши мне попозже"
@@ -288,19 +300,71 @@ namespace EmotienBot
             }
         }
 
-        public static Emotion Max(Emotion emotion)
+        public static string Max(Emotion emotion)
         {
-            long max = 0;
-            Emotion b = null;
-            foreach (long i in emotion)
+            var anger = emotion.Anger;
+            var contempt = emotion.Contempt;
+            var disgust = emotion.Disgust;
+            var fear = emotion.Fear;
+            var happyness = emotion.Happiness;
+            var neutral = emotion.Neutral;
+            var sadness = emotion.Sadness;
+            var surprise = emotion.Surprise;
+            var str = "";
+            var res=anger;
+            long max = anger;
+            var array = new[] {contempt,disgust,fear,happyness,neutral,sadness,surprise};
+            foreach(var i in array)
             {
                 if (i > max)
                 {
                     max = i;
-                  
+                    res =res++;
+                }
+                
+            }
+            foreach (var ih in array)
+            {
+                if (res == 0)
+                {
+                    str= "Anger"; 
+                }
+
+                if (res == 1)
+                {
+                    str= "Contempt";
+                }
+                if (res == 2)
+                {
+                    str= "Disgust";
+                }
+                if (res == 3)
+                {
+                    str= "Fear";
+                }
+                if (res == 4)
+                {
+                    str= "Happyness";
+                }
+                if (res == 5)
+                {
+                  str= "Neutral";
+                }
+                if (res == 6)
+                {
+                    str= "Sadness";
+                }
+                if (res == 7)
+                {
+                    str= "Surprise";
+                }
+                else
+                {
+                    str= "";
                 }
             }
-            return b ;
+
+            return str;
         }
 
     }
