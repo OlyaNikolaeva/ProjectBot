@@ -199,21 +199,31 @@ namespace EmotienBot
 
             if (userInfo.Step == 6)
             {
-
-                var emotionGuy = new StartEmotionsAPI();
-                var currentEmotion = await emotionGuy.Start(userInfo.Photo.Path);
-                var maxEm = new MaxEmotionKek();
-                string g =maxEm.Max(currentEmotion);
-
-                var ty = new EmotionToString();
-                var type = ty.ToStringEm(g);
-
-                await botClient.SendTextMessageAsync(
+                if (userInfo.Photo.Path == null)
+                {
+                    await botClient.SendTextMessageAsync(
                     chatId: e.Message.Chat,
-                    text: type
-                );
+                    text: "Че блин????"
+                     );
+                    userInfo.Step = 4;
+                }
+                else
+                {
+                    var emotionGuy = new StartEmotionsAPI();
+                    var currentEmotion = await emotionGuy.Start(userInfo.Photo.Path);
+                    var maxEm = new MaxEmotionKek();
+                    string g = maxEm.Max(currentEmotion);
 
-                userInfo.Step++;
+                    var ty = new EmotionToString();
+                    var type = ty.ToStringEm(g);
+
+                    await botClient.SendTextMessageAsync(
+                        chatId: e.Message.Chat,
+                        text: type
+                    );
+
+                    userInfo.Step++;
+                }
             }
 
             if (userInfo.Step == 7)
@@ -250,6 +260,7 @@ namespace EmotienBot
                     await botClient.SendPhotoAsync(
                     chatId: e.Message.Chat,
                     File.OpenRead(userInfo.Photo.Path),
+                    
                     replyMarkup: new ReplyKeyboardRemove()
                      );
                 }
@@ -261,7 +272,6 @@ namespace EmotienBot
                         text: "Иди поспи",
                         replyMarkup: new ReplyKeyboardRemove()
                     );
-
                 }
 
                 if (e.Message.Text == "Хочу отправить фото сново")
@@ -288,7 +298,6 @@ namespace EmotienBot
 
             if (userInfo.Step == 9)
             {
-
                 await botClient.SendTextMessageAsync(
                     chatId: e.Message.Chat,
                     text: $"Теперь я устал, если хочешь еще поболтать, напиши мне попозже"
