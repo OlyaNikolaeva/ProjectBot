@@ -30,7 +30,7 @@ namespace EmotienBot
                 return "Ваше лицо выражает страх.";
             }
 
-            if (emotion == "Happiness")
+            if (emotion == "Happyness")
             {
                 return "Ваше лицо выражает счастье.";
             }

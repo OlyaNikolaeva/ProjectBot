@@ -45,11 +45,6 @@ namespace EmotienBot
 
             if (userInfo == null)
             {
-                //await botClient.SendTextMessageAsync(
-                //chatId: e.Message.Chat,
-                //text: "Привет, меня зовут Гриша-Голубь и я являюсь ботом, который распознает твои эмоции по фотографии, которую ты мне отправищь)"
-                //);
-
                 userInfo = new UserInfo
                 {
                     Emotion = new Emotion(),
@@ -62,6 +57,10 @@ namespace EmotienBot
                 userInfo.Human.SenderId = senderId;
                 userInfo.Human.Date = dateCurrent;
 
+                await botClient.SendTextMessageAsync(
+              chatId: e.Message.Chat,
+              text: "Привет, меня зовут Гриша-Голубь и я являюсь ботом, который распознает твои эмоции по фотографии, которую ты мне отправищь)"
+              );
                 //var listPeople = Service.GetAll();
                 foreach (var i in listPeople)
                 {
@@ -154,13 +153,12 @@ namespace EmotienBot
                 var lastName = e.Message.Text;
                 userInfo.Human.LastName = lastName;
 
-                userInfo.Step++;
                 Service.Save(userInfo.Human);
                 await botClient.SendTextMessageAsync(
                     chatId: e.Message.Chat,
                     text: "Отлично, у меня есть необходимые данные, чтобы внести вас в базу"
                 );
-                return;
+                userInfo.Step++;
             }
 
             if (userInfo.Step == 4)
@@ -203,17 +201,12 @@ namespace EmotienBot
             {
 
                 var emotionGuy = new StartEmotionsAPI();
-
                 var currentEmotion = await emotionGuy.Start(userInfo.Photo.Path);
-                var g = Max(currentEmotion);
-                // userInfo.Emotion = currentEmotion;
-                //EmotionService.Save(userInfo.Emotion);
-
-                var emotion = currentEmotion.ToString();
+                var maxEm = new MaxEmotionKek();
+                string g =maxEm.Max(currentEmotion);
 
                 var ty = new EmotionToString();
-                var type = ty.ToStringEm(emotion);
-
+                var type = ty.ToStringEm(g);
 
                 await botClient.SendTextMessageAsync(
                     chatId: e.Message.Chat,
@@ -225,7 +218,7 @@ namespace EmotienBot
 
             if (userInfo.Step == 7)
             {
-
+                userInfo.Step++;
                 await botClient.SendTextMessageAsync(
                     chatId: e.Message.Chat,
                     text: "Что ты хочешь сделать дальше?",
@@ -235,27 +228,29 @@ namespace EmotienBot
                         {
                           new []
                           {
-                           new KeyboardButton("Хочу еще раз отправить фото"),
+                           new KeyboardButton("Хочу получить фото обратно"),
                            new KeyboardButton("Устал"),
                            },
                           new []
                            {
-                           new KeyboardButton("Что то другое"),
+                           new KeyboardButton("Хочу отправить фото снова"),
                            new KeyboardButton("Хочу кофе")
                            },
                         }
                     }
                 );
-                userInfo.Step++;
+                return;
             }
 
             if (userInfo.Step == 8)
             {
+
                 if (e.Message.Text == "Хочу получить фото обратно")
                 {
                     await botClient.SendPhotoAsync(
                     chatId: e.Message.Chat,
-                    File.OpenRead($"files\\{userInfo.Photo.Path}")
+                    File.OpenRead(userInfo.Photo.Path),
+                    replyMarkup: new ReplyKeyboardRemove()
                      );
                 }
 
@@ -263,28 +258,30 @@ namespace EmotienBot
                 {
                     await botClient.SendTextMessageAsync(
                         chatId: e.Message.Chat,
-                        text: "Иди поспи"
+                        text: "Иди поспи",
+                        replyMarkup: new ReplyKeyboardRemove()
                     );
 
                 }
 
-                if (e.Message.Text == "Что то другое")
+                if (e.Message.Text == "Хочу отправить фото сново")
                 {
                     await botClient.SendTextMessageAsync(
                         chatId: e.Message.Chat,
-                        text: "ЭЭЭ..........Нет"
+                        text: "Ок, я готов",
+                        replyMarkup: new ReplyKeyboardRemove()
                     );
+                    userInfo.Step = 4;
 
                 }
 
                 if (e.Message.Text == "Хочу кофе")
                 {
-
                     await botClient.SendTextMessageAsync(
                         chatId: e.Message.Chat,
-                        text: "Советую сходить в Coffe Bean,говорят там скидки)"
+                        text: "Советую сходить в Coffe Bean,говорят там скидки)",
+                        replyMarkup: new ReplyKeyboardRemove()
                     );
-
                 }
                 userInfo.Step++;
             }
@@ -296,79 +293,9 @@ namespace EmotienBot
                     chatId: e.Message.Chat,
                     text: $"Теперь я устал, если хочешь еще поболтать, напиши мне попозже"
                 );
-                return;
+                userInfo.Step = 4;
             }
         }
 
-        public static string Max(Emotion emotion)
-        {
-            var anger = emotion.Anger;
-            var contempt = emotion.Contempt;
-            var disgust = emotion.Disgust;
-            var fear = emotion.Fear;
-            var happyness = emotion.Happiness;
-            var neutral = emotion.Neutral;
-            var sadness = emotion.Sadness;
-            var surprise = emotion.Surprise;
-            var res = anger;
-            long max = anger;
-            var array = new[] { anger, contempt, disgust, fear, happyness, neutral, sadness, surprise };
-            for (var i = 0; i < array.Length; i++)
-            {
-                if (array[i] > max)
-                {
-                    res = i;
-                }
-
-            }
-            var t = Result(res);
-            return t;
-        }
-
-        public static string Result(long res)
-        {
-            var str = "";
-            if (res == 0)
-            {
-                str = "Anger";
-            }
-
-            if (res == 1)
-            {
-                str = "Contempt";
-            }
-            if (res == 2)
-            {
-                str = "Disgust";
-            }
-            if (res == 3)
-            {
-                str = "Fear";
-            }
-            if (res == 4)
-            {
-                str = "Happyness";
-            }
-            if (res == 5)
-            {
-                str = "Neutral";
-            }
-            if (res == 6)
-            {
-                str = "Sadness";
-            }
-            if (res == 7)
-            {
-                str = "Surprise";
-            }
-            else
-            {
-                str = "";
-            }
-            return str;
-        }
     }
-        
-
-    
 }

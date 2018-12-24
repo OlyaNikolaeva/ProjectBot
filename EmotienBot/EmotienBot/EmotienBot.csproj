@@ -197,6 +197,7 @@
     <Compile Include="EmotionService.cs" />
     <Compile Include="EmotionToString.cs" />
     <Compile Include="FileService.cs" />
+    <Compile Include="MaxEmotionKek.cs" />
     <Compile Include="Photo.cs" />
     <Compile Include="UserService.cs" />
     <Compile Include="FaceComponents.cs" />
